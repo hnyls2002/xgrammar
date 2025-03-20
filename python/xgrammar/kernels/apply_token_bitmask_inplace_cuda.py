@@ -85,21 +85,21 @@ def _load_torch_ops() -> None:
         is_python_module=False,
     )
 
-
-_check_cuda_toolchain()
-_remove_torch_nvcc_flags()
-_load_torch_ops()
-
-
-_is_register_fake_available = hasattr(torch, "library") and hasattr(torch.library, "register_fake")
-
-if _is_register_fake_available:
-    # To support torch.compile with fullgraph=True, a fake kernel is needed.
-    @torch.library.register_fake("xgrammar::apply_token_bitmask_inplace_cuda")
-    def _(
-        logits: torch.Tensor, bitmask: torch.Tensor, indices: Optional[torch.Tensor] = None
-    ) -> None:
-        pass
+if not os.environ.get("XGRAMMAR_TOKEN_BITMASK_TRITON") == "1":
+    _check_cuda_toolchain()
+    _remove_torch_nvcc_flags()
+    _load_torch_ops()
+    
+    
+    _is_register_fake_available = hasattr(torch, "library") and hasattr(torch.library, "register_fake")
+    
+    if _is_register_fake_available:
+        # To support torch.compile with fullgraph=True, a fake kernel is needed.
+        @torch.library.register_fake("xgrammar::apply_token_bitmask_inplace_cuda")
+        def _(
+            logits: torch.Tensor, bitmask: torch.Tensor, indices: Optional[torch.Tensor] = None
+        ) -> None:
+            pass
 
 
 def apply_token_bitmask_inplace_cuda(
