@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 from contextlib import suppress
 from typing import List, Optional, Union
 
@@ -23,7 +24,6 @@ import torch.utils.cpp_extension
 def _check_cuda_toolchain() -> None:
     """check if nvcc is available and if pytorch will likely find it"""
     import glob
-    import os
     import shutil
     from pathlib import Path
 
